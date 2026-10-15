@@ -1,0 +1,25 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>vcode2bar web – tests (running…)</title>
+<style>
+  body { font: 13px/1.45 ui-monospace, "Cascadia Mono", Consolas, monospace; margin: 16px; background: #fff; color: #222; }
+  .pass { color: #1a7f37; } .fail { color: #c62828; white-space: pre-wrap; } .summary { font-weight: bold; font-size: 15px; margin-top: 8px; }
+</style>
+</head>
+<body>
+<h1>vcode2bar web – tests</h1>
+<p>Checks the browser version against the Python version's own results (<code>vectors.json</code>, made by
+<code>web/tools/gen_fixtures.py</code>) and tests rendering, read-back, PDF and file reading.</p>
+<div id="log"></div>
+<script src="../js/code128-table.js"></script>
+<script src="../js/strings-core.js"></script>
+<script src="../js/strings-web.js"></script>
+<script src="../js/core.js"></script>
+<script src="../js/render.js"></script>
+<script src="../js/reader.js"></script>
+<script src="tests.js"></script>
+</body>
+</html>

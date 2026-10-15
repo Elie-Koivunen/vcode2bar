@@ -1,0 +1,88 @@
+# vcode2bar web version: test it in a real browser, then publish it with GitHub Pages at
+#   https://elie-koivunen.github.io/vcode2bar/web/
+# The site root (…/vcode2bar/) only forwards to web/.
+name: web
+
+on:
+  push:
+    branches: ["**"]
+    paths: ["web/**", "vcode2bar.py", "requirements.txt", ".github/workflows/web.yml"]
+  pull_request:
+    paths: ["web/**", "vcode2bar.py", "requirements.txt", ".github/workflows/web.yml"]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  test:
+    name: browser tests (Chrome, headless)
+    runs-on: ubuntu-24.04
+    steps:
+      - uses: actions/checkout@v5
+      - uses: actions/setup-python@v6
+        with:
+          python-version: "3.12"
+      - name: Python packages (the fixture generator uses the Python version)
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y libzbar0t64
+          python -m pip install -r requirements.txt
+      - name: Shared data matches vcode2bar.py
+        # strings, Code 128 table and test vectors are generated from the Python version;
+        # this fails if someone changed one side without regenerating
+        run: |
+          python web/tools/gen_fixtures.py
+          git diff --stat --exit-code -- web/js web/tests/vectors.json
+      - name: Browser tests
+        shell: bash
+        run: |
+          set +e
+          python web/tools/run_browser_tests.py --browser "$(command -v google-chrome)" --timeout 600 \
+            2>&1 | tee "$RUNNER_TEMP/web-tests.log"
+          rc=${PIPESTATUS[0]}
+          if [ "$rc" -ne 0 ]; then
+            msg=$( (grep -E "FAIL|no report|Error" "$RUNNER_TEMP/web-tests.log" || tail -n 30 "$RUNNER_TEMP/web-tests.log") \
+                  | tail -n 40 | tr -d '\r' | sed -e 's/%/%25/g' | sed -e ':a;N;$!ba;s/\n/%0A/g')
+            echo "::error title=vcode2bar web tests failed::$msg"
+            { echo '### vcode2bar web tests failed'; echo '```'; tail -n 80 "$RUNNER_TEMP/web-tests.log"; echo '```'; } \
+              >> "$GITHUB_STEP_SUMMARY"
+          fi
+          exit "$rc"
+
+  deploy:
+    name: publish on GitHub Pages
+    needs: test
+    if: github.event_name != 'pull_request' && github.ref == 'refs/heads/main'
+    runs-on: ubuntu-24.04
+    permissions:
+      pages: write
+      id-token: write
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}web/
+    concurrency:
+      group: pages
+      cancel-in-progress: false
+    steps:
+      - uses: actions/checkout@v5
+      - name: Build the site (web/ without the developer tools; root forwards to web/)
+        run: |
+          mkdir -p _site/web
+          rsync -a --exclude tools/ web/ _site/web/
+          cp LICENSE _site/web/LICENSE.txt
+          cat > _site/index.html <<'EOF'
+          <!doctype html>
+          <html lang="en"><head><meta charset="utf-8">
+          <meta http-equiv="refresh" content="0; url=web/">
+          <link rel="canonical" href="web/">
+          <title>vcode2bar</title></head>
+          <body><p><a href="web/">Open the vcode2bar web version</a></p></body></html>
+          EOF
+          find _site -type f | sort | head -50
+      - uses: actions/configure-pages@v6
+      - uses: actions/upload-pages-artifact@v5
+        with:
+          path: _site
+      - id: deployment
+        uses: actions/deploy-pages@v5

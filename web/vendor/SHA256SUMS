@@ -1,0 +1,5 @@
+fb506e4ade12d7a9efa67c9d76a9a28c8e15d347ca49a69e48e29b40b34ad2ab *zxing-wasm/LICENSE
+228e6d8ccb841c544386eeafd5f18294d3e4aa0e7aa20419bc51a0009b9d3c17 *zxing-wasm/zxing-reader.iife.js
+aecc1876de036c62c8419f67a5e1a16b1698a325bcd190aa84810d516e263931 *zxing-wasm/zxing_reader.wasm
+57456c8e0c81e46be31174b499ef77f2b9f5ee46d04412ba627320a36755d4c2 *pdfjs/pdf.min.mjs
+9536359f1b8367850d485731ca1d5e45c159a7b7a0912325e539937aa21ceb18 *pdfjs/pdf.worker.min.mjs
