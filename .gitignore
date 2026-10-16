@@ -6,6 +6,7 @@ dist/
 build/
 *.egg-info/
 *.spec
+!packaging/vcode2bar.spec
 # generated output
 viivakoodi*.png
 viivakoodi*.svg

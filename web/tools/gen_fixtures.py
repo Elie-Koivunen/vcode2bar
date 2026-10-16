@@ -200,7 +200,9 @@ def main() -> None:
     files.append({"file": "py_nonbank.png", "codes": [], "rejected_contains": "INVOICE"})
     Image.new("RGB", (800, 300), "white").save(fx / "py_blank.png")
     files.append({"file": "py_blank.png", "codes": [], "error": "no barcode found"})
-    b.convert("RGB").save(fx / "py_image_only.pdf", "PDF", resolution=600)
+    import time                                          # fixed dates: regenerating gives identical bytes
+    fixed = time.gmtime(1767225600)                      # 2026-01-01 00:00 UTC
+    b.convert("RGB").save(fx / "py_image_only.pdf", "PDF", resolution=600, creationDate=fixed, modDate=fixed)
     files.append({"file": "py_image_only.pdf", "codes": [c9]})
     v._mini_pdf(fx / "py_text_only.pdf", ["Lasku 1043", "Puh 040 1234567", "Virtuaaliviivakoodi:", g])
     files.append({"file": "py_text_only.pdf", "codes": [c0]})
