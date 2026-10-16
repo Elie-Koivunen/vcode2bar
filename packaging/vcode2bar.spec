@@ -4,7 +4,7 @@
 import sys
 from pathlib import Path
 
-from PyInstaller.utils.hooks import collect_data_files
+from PyInstaller.utils.hooks import collect_data_files, collect_dynamic_libs
 
 ROOT = Path(SPECPATH).parent                      # the repository root  # noqa: F821
 PKG = ROOT / "packaging"
@@ -15,11 +15,14 @@ datas = collect_data_files("barcode")              # python-barcode's font for "
 # window - without it the barcode preview stays empty in a packaged build
 hiddenimports = ["PIL.ImageTk", "PIL._tkinter_finder", "tkinter", "tkinter.ttk", "tkinter.filedialog",
                  "tkinter.messagebox", "pyzbar.pyzbar", "pypdfium2"]
+# pyzbar loads its Windows DLLs (libzbar-64.dll, libiconv.dll) with ctypes from its own folder, so
+# PyInstaller does not see them; on Linux the system's libzbar is used
+binaries = collect_dynamic_libs("pyzbar") if WINDOWS else []
 excludes = ["numpy", "pytest", "setuptools", "pip", "IPython"]
 
 
 def analysis(script):
-    return Analysis([str(PKG / script)], pathex=[str(ROOT)], datas=datas,          # noqa: F821
+    return Analysis([str(PKG / script)], pathex=[str(ROOT)], datas=datas, binaries=binaries,  # noqa: F821
                     hiddenimports=hiddenimports, excludes=excludes, noarchive=False)
 
 

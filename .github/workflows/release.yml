@@ -141,7 +141,9 @@ jobs:
           vcode2bar "$SAMPLE_CODE" -o /tmp/x --format all --verify
           vcode2bar --read /tmp/x.pdf --json | grep "$SAMPLE_CODE"
           sh /usr/local/share/vcode2bar/setup.sh --uninstall
-          ! command -v vcode2bar
+          # check the files, not "command -v": the shell remembers the path of a command it has run
+          test ! -e /usr/local/bin/vcode2bar
+          test ! -e /usr/local/share/vcode2bar
 
   sources:
     name: LGPL sources for the Windows libraries
