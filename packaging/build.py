@@ -130,10 +130,11 @@ def package_readme(v: str, cp: configparser.ConfigParser) -> str:
 # ---------------------------------------------------------------- tests of the built program
 def smoke_test(app: Path, v: str, full_selftest: bool) -> None:
     cli = app / ("vcode2bar-cli.exe" if WINDOWS else "vcode2bar")
-    env = dict(os.environ, PYTHONIOENCODING="utf-8")
+    # a packaged program ignores PYTHONIOENCODING and writes to a pipe in the system's encoding
+    # (the ANSI code page on Windows, UTF-8 on Linux), as Python does: read it the same way
 
     def out(*args, rc=0) -> str:
-        r = subprocess.run([str(cli), *args], capture_output=True, text=True, encoding="utf-8", env=env, timeout=600)
+        r = subprocess.run([str(cli), *args], capture_output=True, text=True, errors="replace", timeout=600)
         if r.returncode != rc:
             sys.exit(f"smoke test failed: {' '.join(args)} -> {r.returncode}\n{r.stdout}\n{r.stderr}")
         return r.stdout + r.stderr
