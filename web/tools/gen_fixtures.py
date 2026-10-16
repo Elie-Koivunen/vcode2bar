@@ -227,6 +227,10 @@ def main() -> None:
         f"window.VC_VERSION = {json.dumps(v.__version__)};   // one version for both editions\n",
         encoding="utf-8")
 
+    # project information and third-party notices: the page reads these files (not hardcoded)
+    for name in ("project.ini", "THIRD-PARTY-NOTICES.txt"):
+        (WEB / name).write_bytes((ROOT / name).read_bytes())
+
     codes = list(c128.CODES)
     assert len(codes) >= 106, len(codes)
     stop = c128.STOP + "11"          # python-barcode appends the 2-module termination bar after STOP

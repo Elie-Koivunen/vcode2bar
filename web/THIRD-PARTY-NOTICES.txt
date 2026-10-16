@@ -1,0 +1,112 @@
+vcode2bar - THIRD-PARTY NOTICES
+===============================
+
+vcode2bar itself is licensed under the terms in LICENSE. This file lists the third-party software
+that vcode2bar uses or that its packages and its web version include, with each component's
+licence. Each component remains under its own licence; vcode2bar's licence does not apply to it.
+
+In the Windows and Linux packages, the full licence texts are in the "licenses" folder next to
+this file. The web version shows this file under Help.
+
+------------------------------------------------------------------------------------------------
+1. Python edition - components included in the Windows and Linux packages
+------------------------------------------------------------------------------------------------
+
+Python 3.12 (the runtime)
+    Licence: PSF License Agreement (PSF-2.0); Python's bundled libraries (OpenSSL, libffi,
+    zlib, bzip2, xz, expat, mpdecimal and others) under their own permissive licences.
+    https://www.python.org/                                  licenses/python/
+
+Tcl/Tk 8.6 (the window toolkit, via tkinter)
+    Licence: Tcl/Tk licence (BSD-style).
+    https://www.tcl-lang.org/                                licenses/tcl-tk/
+
+python-barcode 0.16.1 (Code 128 encoding and rendering)
+    Licence: MIT.
+    https://github.com/WhyNotHugo/python-barcode             licenses/python-barcode/
+
+Pillow 12.3.0 (images)
+    Licence: MIT-CMU (HPND). Pillow's packages include libjpeg-turbo, libpng, zlib, libtiff,
+    FreeType, Little CMS, libwebp, OpenJPEG, HarfBuzz and other libraries; their licences are
+    part of Pillow's licence file.
+    https://python-pillow.github.io/                         licenses/pillow/
+
+pyzbar 0.1.9 (barcode reading, Python part)
+    Licence: MIT.
+    https://github.com/NaturalHistoryMuseum/pyzbar           licenses/pyzbar/
+
+ZBar 0.10 and GNU libiconv 1.14 (barcode reading library) - WINDOWS PACKAGES ONLY
+    Files: libzbar-64.dll and libiconv.dll, unmodified copies from the pyzbar 0.1.9 Windows
+    package (built by the pyzbar authors; https://github.com/NaturalHistoryMuseum/barcode-reader-dlls).
+    Licence: GNU Lesser General Public License version 2.1 (LGPL-2.1).
+    They are separate, dynamically loaded libraries: you may replace them with your own
+    compatible builds. The complete corresponding source code is published with every
+    vcode2bar release on GitHub, next to the packages (zbar-0.10.tar.bz2 and
+    libiconv-1.14.tar.gz), and is also available from
+    https://sourceforge.net/projects/zbar/files/zbar/0.10/ and
+    https://ftp.gnu.org/pub/gnu/libiconv/                    licenses/lgpl-2.1.txt
+    On Linux, ZBar is not included: the installer installs it from the distribution's own
+    package (libzbar0 / zbar) when you agree.
+
+pypdfium2 5.14.0 with PDFium (reading invoice PDFs)
+    Licence: Apache-2.0 or BSD-3-Clause (pypdfium2); BSD-3-Clause (PDFium) with its bundled
+    libraries (FreeType, ICU, Little CMS, libjpeg-turbo, OpenJPEG, libpng, zlib, Abseil and
+    others) under their own permissive licences.
+    https://github.com/pypdfium2-team/pypdfium2              licenses/pypdfium2/
+
+PyInstaller 6.22.3 (packaging; its bootloader is part of the program files)
+    Licence: GPL-2.0-or-later with the PyInstaller bootloader exception, which allows
+    distributing the packaged program under its own licence.
+    https://pyinstaller.org/                                 licenses/pyinstaller/
+
+Inno Setup (the engine of the Windows installer, setup.exe) - WINDOWS INSTALLER ONLY
+    Copyright (C) 1997-2026 Jordan Russell. Portions Copyright (C) 2000-2026 Martijn Laan.
+    Licence: Inno Setup License.
+    https://jrsoftware.org/                                  licenses/inno-setup-license.txt
+
+Microsoft Visual C++ 2013 Redistributable (x64) - NOT INCLUDED
+    The Windows ZBar library needs this Microsoft runtime. vcode2bar does not include it: if it
+    is missing, the Windows installer offers to download Microsoft's official installer
+    (12.0.40664, checked by its SHA-256 checksum) from microsoft.com, which installs it under
+    Microsoft's own licence terms.
+
+When you run vcode2bar from source (python vcode2bar.py), these libraries are installed by
+you from their own distributions (pip, your package manager) under the same licences.
+
+------------------------------------------------------------------------------------------------
+2. Web version (https://elie-koivunen.github.io/vcode2bar/web/)
+------------------------------------------------------------------------------------------------
+
+zxing-wasm 3.1.5 (barcode reading in the browser; ZXing-C++ compiled to WebAssembly)
+    Licence: MIT (zxing-wasm); ZXing-C++ under Apache-2.0.
+    https://github.com/Sec-ant/zxing-wasm                    web/vendor/zxing-wasm/LICENSE
+
+PDF.js 6.4.299 (reading invoice PDFs in the browser)
+    Licence: Apache-2.0.
+    https://github.com/mozilla/pdf.js                        web/vendor/pdfjs/LICENSE
+
+Both are included unmodified; versions and checksums are listed in web/vendor/README.md.
+
+------------------------------------------------------------------------------------------------
+3. Specification
+------------------------------------------------------------------------------------------------
+
+The bank barcode follows the public specification "Pankkiviivakoodi-opas" (bank barcode guide,
+version 5.3) published by Finance Finland (Finanssiala ry). vcode2bar implements that public
+specification; it does not include the document.
+
+------------------------------------------------------------------------------------------------
+4. Trademarks and non-affiliation
+------------------------------------------------------------------------------------------------
+
+vcode2bar is an independent project. It is not affiliated with, sponsored or endorsed by
+Finance Finland (Finanssiala ry) or any bank, nor by VST Enterprises Ltd (owner of the VCode
+trademark) or Karamba Security Ltd (owner of the VCODE trademark); the name vcode2bar is not
+derived from their products.
+
+Names of other companies and products are used only to describe compatibility and are the
+trademarks of their respective owners, including: Windows and Excel (the Microsoft group of
+companies), macOS (Apple Inc.), Linux (the registered trademark of Linus Torvalds in the U.S.
+and other countries), Ubuntu (Canonical Ltd.), Debian (Software in the Public Interest, Inc.),
+Fedora and Red Hat (Red Hat, Inc.), openSUSE (SUSE LLC), Python (the Python Software
+Foundation) and GitHub (GitHub, Inc.).

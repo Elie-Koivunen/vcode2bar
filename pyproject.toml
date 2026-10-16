@@ -10,7 +10,7 @@ dynamic = ["version"]
 description = "Finnish virtual barcode (virtuaaliviivakoodi) <-> bank barcode: create, validate, render, print and read back. GUI + CLI."
 readme = "README.md"
 requires-python = ">=3.9"
-license = { text = "PolyForm-Noncommercial-1.0.0" }   # SPDX id; versions up to 1.3.2 were MIT
+license = { text = "PolyForm-Noncommercial-1.0.0" }   # SPDX id (details: project.ini, LICENSE)
 authors = [{ name = "Elie Koivunen" }]
 keywords = ["virtuaaliviivakoodi", "pankkiviivakoodi", "virtual barcode", "bank barcode", "code128",
             "finland", "invoice", "iban", "rf reference", "viitenumero"]
@@ -46,6 +46,11 @@ Issues = "https://github.com/Elie-Koivunen/vcode2bar/issues"
 
 [tool.setuptools]
 py-modules = ["vcode2bar"]
+
+# project.ini (name, licence, contact), the licence and the third-party notices go to
+# <prefix>/share/vcode2bar, where the program looks for them (Help > About, --about, --licenses)
+[tool.setuptools.data-files]
+"share/vcode2bar" = ["project.ini", "LICENSE", "THIRD-PARTY-NOTICES.txt"]
 
 [tool.setuptools.dynamic]
 version = { attr = "vcode2bar.__version__" }

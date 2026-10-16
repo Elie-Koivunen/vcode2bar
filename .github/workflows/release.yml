@@ -1,0 +1,197 @@
+# vcode2bar release packages: build and test the Windows and Linux installers and portable
+# packages, then publish them as a GitHub Release.
+#   push a tag vcode2bar-v<version>  -> build, test, publish the release
+#   run by hand (Actions tab)        -> build and test only; the packages are kept as artifacts (14 days)
+name: release
+
+on:
+  push:
+    tags: ["vcode2bar-v*"]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+env:
+  SAMPLE_CODE: "479440520200360820048831500000000868516259619897100612"   # official test invoice 1
+
+jobs:
+  windows:
+    name: Windows packages
+    runs-on: windows-latest
+    timeout-minutes: 45
+    steps:
+      - uses: actions/checkout@v5
+      - uses: actions/setup-python@v6
+        with:
+          python-version: "3.12"
+      - name: Build tools
+        shell: pwsh
+        run: |
+          python -m pip install --upgrade pip
+          python -m pip install -r packaging/requirements.txt
+          if (-not (Get-Command ISCC.exe -ErrorAction SilentlyContinue) -and
+              -not (Test-Path "C:\Program Files (x86)\Inno Setup 6\ISCC.exe")) {
+            choco install innosetup -y --no-progress
+          }
+      - name: Build and test (full self-test inside the built program)
+        shell: pwsh
+        run: python packaging/build.py --out "$env:RUNNER_TEMP\out" --selftest
+      - name: Installer - silent install, run, uninstall
+        shell: pwsh
+        run: |
+          $ErrorActionPreference = "Stop"
+          $setup = Get-ChildItem "$env:RUNNER_TEMP\out\*-setup.exe" | Select-Object -First 1
+          $dir = Join-Path $env:RUNNER_TEMP "installed"
+          function Run-Setup($extra) {
+            $argList = @("/VERYSILENT", "/SUPPRESSMSGBOXES", "/NORESTART", "/CURRENTUSER", "/DIR=$dir",
+                      "/LOG=$env:RUNNER_TEMP\setup.log") + $extra
+            $p = Start-Process $setup.FullName -ArgumentList $argList -PassThru
+            if (-not $p.WaitForExit(600000)) { $p.Kill(); Get-Content "$env:RUNNER_TEMP\setup.log" -Tail 60; throw "setup timed out" }
+            if ($p.ExitCode -ne 0) { Get-Content "$env:RUNNER_TEMP\setup.log" -Tail 60; throw "setup exit code $($p.ExitCode)" }
+          }
+          # 1) plain silent install: must not touch the VC++ runtime
+          Run-Setup @()
+          $cli = Join-Path $dir "vcode2bar-cli.exe"
+          & $cli --version
+          if ($LASTEXITCODE -ne 0) { throw "installed program does not start" }
+          & $cli --decode $env:SAMPLE_CODE --lang en
+          # 2) again with /INSTALLVCREDIST=1 (upgrade in place; downloads + checks + installs the
+          #    Microsoft runtime only if it is missing), then barcode reading must work
+          Run-Setup @("/INSTALLVCREDIST=1")
+          $deps = & $cli --deps | Out-String
+          Write-Host $deps
+          if ($deps -notmatch "OK\s+pyzbar") { throw "zbar not usable after install" }
+          $tmp = Join-Path $env:RUNNER_TEMP "render"
+          & $cli $env:SAMPLE_CODE -o "$tmp" --format all --verify
+          if ($LASTEXITCODE -ne 0) { throw "render/read-back failed" }
+          # Start menu entry, uninstall entry, uninstall
+          $uninst = Get-ChildItem "HKCU:\Software\Microsoft\Windows\CurrentVersion\Uninstall" |
+                    Where-Object { (Get-ItemProperty $_.PSPath).DisplayName -like "vcode2bar*" }
+          if (-not $uninst) { throw "no uninstall entry" }
+          # the uninstaller restarts itself from %TEMP% and the first process exits at once: poll
+          $u = Start-Process (Join-Path $dir "unins000.exe") -ArgumentList "/VERYSILENT", "/SUPPRESSMSGBOXES", "/NORESTART" -PassThru
+          if (-not $u.WaitForExit(300000)) { $u.Kill(); throw "uninstall timed out" }
+          $gone = $false
+          for ($i = 0; $i -lt 60; $i++) { if (-not (Test-Path (Join-Path $dir "vcode2bar.exe"))) { $gone = $true; break }; Start-Sleep -Seconds 1 }
+          if (-not $gone) { throw "uninstall left the program behind" }
+          Write-Host "installer test passed"
+      - uses: actions/upload-artifact@v7
+        with:
+          name: windows-packages
+          path: |
+            ${{ runner.temp }}/out/*.exe
+            ${{ runner.temp }}/out/*.zip
+            ${{ runner.temp }}/out/SHA256SUMS-*.txt
+          retention-days: 14
+
+  linux:
+    name: Linux packages
+    runs-on: ubuntu-22.04          # oldest supported glibc: the packages also run on newer systems
+    timeout-minutes: 45
+    steps:
+      - uses: actions/checkout@v5
+      - uses: actions/setup-python@v6
+        with:
+          python-version: "3.12"
+      - name: Build tools
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y libzbar0 xvfb
+          python -m pip install --upgrade pip
+          python -m pip install -r packaging/requirements.txt
+      - name: Build and test (full self-test, trial install)
+        run: xvfb-run -a python packaging/build.py --out "$RUNNER_TEMP/out" --selftest
+      - uses: actions/upload-artifact@v7
+        with:
+          name: linux-packages
+          path: |
+            ${{ runner.temp }}/out/*.sh
+            ${{ runner.temp }}/out/*.tar.gz
+            ${{ runner.temp }}/out/SHA256SUMS-*.txt
+          retention-days: 14
+
+  distros:
+    name: Linux installer on ${{ matrix.image }}
+    needs: linux
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    strategy:
+      fail-fast: false
+      matrix:
+        image: ["debian:12", "ubuntu:24.04", "fedora:latest", "opensuse/tumbleweed", "archlinux:latest"]
+    container: ${{ matrix.image }}
+    steps:
+      - uses: actions/download-artifact@v8
+        with:
+          name: linux-packages
+      - name: Basic tools of a minimal image
+        run: |
+          if command -v apt-get >/dev/null; then apt-get update -qq; apt-get install -y -qq tar gzip gawk >/dev/null
+          elif command -v dnf >/dev/null; then dnf install -y -q tar gzip gawk findutils
+          elif command -v zypper >/dev/null; then zypper -n -q install tar gzip gawk
+          elif command -v pacman >/dev/null; then pacman -Sy --noconfirm --needed tar gzip gawk; fi
+      - name: Install (the setup script installs ZBar with the system's package manager), use, uninstall
+        run: |
+          set -eux
+          sh ./vcode2bar-*-linux-x64-setup.sh --yes
+          vcode2bar --version
+          vcode2bar --deps | tee deps.txt
+          grep -E "^OK +pyzbar" deps.txt
+          vcode2bar "$SAMPLE_CODE" -o /tmp/x --format all --verify
+          vcode2bar --read /tmp/x.pdf --json | grep "$SAMPLE_CODE"
+          sh /usr/local/share/vcode2bar/setup.sh --uninstall
+          ! command -v vcode2bar
+
+  sources:
+    name: LGPL sources for the Windows libraries
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v5
+      - name: Download and check against the pinned checksums
+        run: |
+          set -eu
+          mkdir sources
+          grep -E '\.(tar\.bz2|tar\.gz)\s' packaging/third-party-sources.txt | while read -r sum name url; do
+            curl -fsSL --retry 3 -o "sources/$name" "$url"
+            echo "$sum  sources/$name" | sha256sum -c -
+          done
+          ls -la sources
+      - uses: actions/upload-artifact@v7
+        with:
+          name: lgpl-sources
+          path: sources/*
+          retention-days: 14
+
+  publish:
+    name: Publish the release
+    if: startsWith(github.ref, 'refs/tags/vcode2bar-v')
+    needs: [windows, linux, distros, sources]
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    permissions:
+      contents: write
+    steps:
+      - uses: actions/checkout@v5
+      - uses: actions/download-artifact@v8
+        with:
+          path: assets
+          merge-multiple: true
+      - name: Check the version, write checksums and release notes
+        run: |
+          set -eu
+          tag="${GITHUB_REF_NAME}"; version="${tag#vcode2bar-v}"
+          grep -q "^__version__ = \"$version\"" vcode2bar.py || { echo "tag $tag does not match __version__"; exit 1; }
+          cd assets
+          rm -f SHA256SUMS-*.txt
+          sha256sum * > SHA256SUMS.txt
+          cat SHA256SUMS.txt
+          cd ..
+          awk -v v="$version" '$0 ~ "^## " v " " {on=1; next} on && /^## / {exit} on' CHANGELOG.md > notes.md
+          printf '\n---\nDownloads: Windows and Linux installers and portable packages, SHA256SUMS.txt.\nThe zbar and libiconv source archives are the corresponding source code of the LGPL libraries in the Windows packages.\n' >> notes.md
+          echo "VERSION=$version" >> "$GITHUB_ENV"
+      - name: Create the GitHub release
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: gh release create "$GITHUB_REF_NAME" assets/* --title "vcode2bar $VERSION" --notes-file notes.md --verify-tag

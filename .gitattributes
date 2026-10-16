@@ -8,3 +8,5 @@
 *.wasm binary
 *.jpg binary
 *.svg text eol=lf
+*.ico binary
+*.sh text eol=lf

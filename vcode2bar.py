@@ -23,13 +23,13 @@ Usage:
 Requires: pip install python-barcode pillow
 Optional: pyzbar (+ zbar library) for reading images / read-back check, pypdfium2 for PDFs.
 GUI uses tkinter (bundled on Windows/macOS; Debian/Ubuntu: apt install python3-tk).
-License: PolyForm Noncommercial 1.0.0 (see LICENSE; noncommercial use only).
-Required Notice: Copyright (c) 2026 Elie Koivunen (https://github.com/Elie-Koivunen/vcode2bar)
-Versions up to 1.3.2 were released under the MIT license.
+Project, contact and licence details: project.ini (shown by Help > About and --about).
+Licence terms: LICENSE. Third-party components: THIRD-PARTY-NOTICES.txt (--licenses).
 """
 from __future__ import annotations
 
 import argparse
+import configparser
 import contextlib
 import csv
 import functools
@@ -49,7 +49,7 @@ from datetime import date, datetime
 from decimal import Decimal
 from pathlib import Path
 
-__version__ = "1.4.0"
+__version__ = "1.5.0"
 
 try:
     from PIL import Image, ImageDraw, ImageFont
@@ -672,6 +672,72 @@ def save_config(cfg: dict) -> None:
         pass
 
 
+# ---------------------------------------------------------------- project information (project.ini)
+def resource_dirs() -> list[Path]:
+    """Where project.ini, LICENSE, THIRD-PARTY-NOTICES.txt and the icons are looked for, in order:
+    inside a packaged build, next to the program, and <prefix>/share/vcode2bar for a pip install."""
+    dirs = []
+    if getattr(sys, "_MEIPASS", None):
+        dirs.append(Path(sys._MEIPASS))
+    if getattr(sys, "frozen", False):
+        dirs.append(Path(sys.executable).resolve().parent)
+    dirs.append(Path(__file__).resolve().parent)
+    dirs.append(Path(sys.prefix) / "share" / "vcode2bar")
+    return dirs
+
+
+def resource_file(name: str) -> Path | None:
+    for d in resource_dirs():
+        if (d / name).is_file():
+            return d / name
+    return None
+
+
+def project_info() -> dict:
+    """The [project] and [license] sections of project.ini as {"project": {...}, "license": {...}}.
+    Empty dicts when the file is missing or unreadable - nothing about the owner or licence is
+    hardcoded in the program."""
+    info: dict = {"project": {}, "license": {}}
+    path = resource_file("project.ini")
+    if path is None:
+        return info
+    cp = configparser.ConfigParser(interpolation=None)
+    try:
+        cp.read(path, encoding="utf-8")
+    except (OSError, configparser.Error):
+        return info
+    for section in info:
+        if cp.has_section(section):
+            info[section] = dict(cp.items(section))
+    return info
+
+
+def about_lines(t: dict) -> list[str]:
+    """Project, licence and contact lines for Help > About and --about (labels in language t)."""
+    info = project_info()
+    p, lic = info["project"], info["license"]
+    if not p and not lic:
+        return [t["info_missing"]]
+    lines = []
+    if lic.get("name"):
+        lines.append(f"{t['lbl_license']}: {lic['name']}" + (f" – {lic['summary']}" if lic.get("summary") else ""))
+    if p.get("copyright"):
+        lines.append(p["copyright"])
+    if p.get("website"):
+        lines.append(f"{t['lbl_website']}: {p['website']}")
+    if p.get("contact"):
+        lines.append(f"{t['lbl_contact']}: {p['contact']}")
+    return lines
+
+
+def notices_text(t: dict) -> str:
+    path = resource_file("THIRD-PARTY-NOTICES.txt")
+    if path is None:
+        site = project_info()["project"].get("website")
+        return t["notices_missing"] + (f"\n{t['lbl_website']}: {site}" if site else "")
+    return path.read_text(encoding="utf-8")
+
+
 # ---------------------------------------------------------------- Windows Subsystem for Linux
 def _detect_wsl() -> bool:
     if not sys.platform.startswith("linux"):
@@ -938,9 +1004,7 @@ T = {'en': {'title': 'vcode2bar – virtual barcode ↔ barcode',
                        'reference check digit (7-3-1 or RF mod 97), valid date, Code 128 checksum.',
         'about_text': 'Finnish virtual barcode ↔ bank barcode (Code 128 set C).\n'
                       '\n'
-                      'Specification: Finanssiala – Pankkiviivakoodi-opas v5.3\n'
-                      'License: PolyForm Noncommercial 1.0.0 – free for noncommercial use\n'
-                      '© 2026 Elie Koivunen · github.com/Elie-Koivunen/vcode2bar',
+                      'Specification: Finanssiala – Pankkiviivakoodi-opas v5.3',
         'tab_create': 'Create',
         'create_intro': 'Fill in the payment details – the virtual barcode is created as you type.',
         'f_iban': 'Account (IBAN)',
@@ -967,6 +1031,12 @@ T = {'en': {'title': 'vcode2bar – virtual barcode ↔ barcode',
         'verify_err': 'Read-back check error: {e}',
         'new_form': 'New from form…',
         'unexpected': 'Unexpected error',
+        'lbl_license': 'License',
+        'lbl_website': 'Website',
+        'lbl_contact': 'Contact',
+        'third_party': 'Third-party licences',
+        'info_missing': 'Project information (project.ini) not found.',
+        'notices_missing': 'The third-party notices (THIRD-PARTY-NOTICES.txt) were not found.',
         'import_csv': 'Import CSV…',
         'csv_files': 'CSV files',
         'imported': 'Imported {n} new code(s) from {f}',
@@ -1113,9 +1183,7 @@ T = {'en': {'title': 'vcode2bar – virtual barcode ↔ barcode',
                        'tarkiste (7-3-1 tai RF mod 97), kelvollinen päivämäärä, Code 128 -tarkiste.',
         'about_text': 'Virtuaaliviivakoodi ↔ pankkiviivakoodi (Code 128, C-merkistö).\n'
                       '\n'
-                      'Määritys: Finanssiala – Pankkiviivakoodi-opas v5.3\n'
-                      'Lisenssi: PolyForm Noncommercial 1.0.0 – vapaa ei-kaupalliseen käyttöön\n'
-                      '© 2026 Elie Koivunen · github.com/Elie-Koivunen/vcode2bar',
+                      'Määritys: Finanssiala – Pankkiviivakoodi-opas v5.3',
         'tab_create': 'Luo',
         'create_intro': 'Täytä maksutiedot – virtuaaliviivakoodi muodostuu kirjoittaessasi.',
         'f_iban': 'Tili (IBAN)',
@@ -1142,6 +1210,12 @@ T = {'en': {'title': 'vcode2bar – virtual barcode ↔ barcode',
         'verify_err': 'Takaisinlukuvirhe: {e}',
         'new_form': 'Uusi lomakkeelta…',
         'unexpected': 'Odottamaton virhe',
+        'lbl_license': 'Lisenssi',
+        'lbl_website': 'Verkkosivu',
+        'lbl_contact': 'Yhteystiedot',
+        'third_party': 'Kolmansien osapuolten lisenssit',
+        'info_missing': 'Projektin tietoja (project.ini) ei löytynyt.',
+        'notices_missing': 'Kolmansien osapuolten tietoja (THIRD-PARTY-NOTICES.txt) ei löytynyt.',
         'import_csv': 'Tuo CSV…',
         'csv_files': 'CSV-tiedostot',
         'imported': 'Tuotiin {n} uutta koodia tiedostosta {f}',
@@ -1288,9 +1362,7 @@ T = {'en': {'title': 'vcode2bar – virtual barcode ↔ barcode',
                        'kontrollsiffra (7-3-1 eller RF mod 97), giltigt datum, Code 128-kontrollsumma.',
         'about_text': 'Finsk virtuell streckkod ↔ bankstreckkod (Code 128, teckenuppsättning C).\n'
                       '\n'
-                      'Specifikation: Finanssiala – Pankkiviivakoodi-opas v5.3\n'
-                      'Licens: PolyForm Noncommercial 1.0.0 – fri för icke-kommersiell användning\n'
-                      '© 2026 Elie Koivunen · github.com/Elie-Koivunen/vcode2bar',
+                      'Specifikation: Finanssiala – Pankkiviivakoodi-opas v5.3',
         'tab_create': 'Skapa',
         'create_intro': 'Fyll i betalningsuppgifterna – den virtuella streckkoden skapas medan du skriver.',
         'f_iban': 'Konto (IBAN)',
@@ -1317,6 +1389,12 @@ T = {'en': {'title': 'vcode2bar – virtual barcode ↔ barcode',
         'verify_err': 'Fel vid kontrolläsning: {e}',
         'new_form': 'Ny från formulär…',
         'unexpected': 'Oväntat fel',
+        'lbl_license': 'Licens',
+        'lbl_website': 'Webbplats',
+        'lbl_contact': 'Kontakt',
+        'third_party': 'Tredjepartslicenser',
+        'info_missing': 'Projektinformationen (project.ini) hittades inte.',
+        'notices_missing': 'Tredjepartsinformationen (THIRD-PARTY-NOTICES.txt) hittades inte.',
         'import_csv': 'Importera CSV…',
         'csv_files': 'CSV-filer',
         'imported': 'Importerade {n} nya koder från {f}',
@@ -1461,9 +1539,7 @@ T = {'en': {'title': 'vcode2bar – virtual barcode ↔ barcode',
                        'kontrollsiffer (7-3-1 eller RF mod 97), gyldig dato, Code 128-kontrollsum.',
         'about_text': 'Finsk virtuell strekkode ↔ bankstrekkode (Code 128, tegnsett C).\n'
                       '\n'
-                      'Spesifikasjon: Finanssiala – Pankkiviivakoodi-opas v5.3\n'
-                      'Lisens: PolyForm Noncommercial 1.0.0 – fri for ikke-kommersiell bruk\n'
-                      '© 2026 Elie Koivunen · github.com/Elie-Koivunen/vcode2bar',
+                      'Spesifikasjon: Finanssiala – Pankkiviivakoodi-opas v5.3',
         'tab_create': 'Opprett',
         'create_intro': 'Fyll inn betalingsopplysningene – den virtuelle strekkoden lages mens du skriver.',
         'f_iban': 'Konto (IBAN)',
@@ -1490,6 +1566,12 @@ T = {'en': {'title': 'vcode2bar – virtual barcode ↔ barcode',
         'verify_err': 'Feil ved kontrollesing: {e}',
         'new_form': 'Ny fra skjema…',
         'unexpected': 'Uventet feil',
+        'lbl_license': 'Lisens',
+        'lbl_website': 'Nettsted',
+        'lbl_contact': 'Kontakt',
+        'third_party': 'Tredjepartslisenser',
+        'info_missing': 'Prosjektinformasjonen (project.ini) ble ikke funnet.',
+        'notices_missing': 'Tredjepartsinformasjonen (THIRD-PARTY-NOTICES.txt) ble ikke funnet.',
         'import_csv': 'Importer CSV…',
         'csv_files': 'CSV-filer',
         'imported': 'Importerte {n} nye koder fra {f}',
@@ -2163,6 +2245,7 @@ class App(_Actions):
         m.add_separator()
         add(m, t["deps"], self.show_components)
         add(m, t["about"], self.show_about)
+        add(m, t["third_party"], self.show_licenses)
         mb.add_cascade(label=t["m_help"], menu=m)
 
         old, self.menubar = self.menubar, mb
@@ -2234,10 +2317,15 @@ class App(_Actions):
         t = T[self.lang]
         import barcode as _bc
         import PIL
-        text = (f"vcode2bar {__version__}\n\n{t['about_text']}\n\n"
+        name = project_info()["project"].get("name", "vcode2bar")
+        text = (f"{name} {__version__}\n\n{t['about_text']}\n\n" + "\n".join(about_lines(t)) + "\n\n"
                 f"{platform.system()} {'(WSL) ' if IS_WSL else ''}· Python {platform.python_version()} · Pillow {PIL.__version__} · "
                 f"python-barcode {getattr(_bc, 'version', '?')}")
-        return self._text_window(t["about"], text, width=72, height=13)
+        return self._text_window(t["about"], text, width=78, height=15)
+
+    def show_licenses(self):
+        t = T[self.lang]
+        return self._text_window(t["third_party"], notices_text(t), mono=True, width=96, height=32)
 
     def _apply_lang(self):
         if not self.root.winfo_exists():
@@ -2530,9 +2618,23 @@ def run_gui(initial: str | None = None, lang: str | None = None, persist: bool =
         print(f"Cannot open the GUI window: {e}\n{hint}\n"
               "The command line works without a display: python vcode2bar.py --help", file=sys.stderr)
         return 4
+    set_window_icon(root)
     App(root, initial=initial, lang=lang, persist=persist)
     root.mainloop()
     return 0
+
+
+def set_window_icon(root) -> bool:
+    """Use the app icon for the window and taskbar when it is available (packaged builds, checkout)."""
+    try:
+        png = resource_file("vcode2bar.png")
+        if png is not None:
+            root._vcode2bar_icon = tk.PhotoImage(file=str(png))   # keep a reference
+            root.iconphoto(True, root._vcode2bar_icon)
+            return True
+    except Exception:  # noqa: BLE001  - an icon is never worth failing for
+        pass
+    return False
 
 
 
@@ -2903,7 +3005,10 @@ def gui_read_csv_tests(app, root, rng):
         # 4 typed code -> added with source "typed/pasted"
         code3 = random_case(rng)[0]; app.set_input(code3); pump(root); app.add_current()
         assert app.records[-1] == (parse(code3), "typed/pasted") or (app.records[-1][0].raw == code3 and app.records[-1][1] == "typed/pasted"); n += 1
-        # 5 clipboard image paste (monkeypatched grab)
+        # 5 clipboard image paste (monkeypatched grab). On WSL paste_image asks the real Windows
+        #   clipboard first, whose content is the machine's, not the test's: test the plain path here
+        #   (gui_wsl_tests covers the WSL path with stubbed Windows tools)
+        g = globals(); saved_wsl = g["IS_WSL"]; g["IS_WSL"] = False
         orig = ImageGrab.grabclipboard
         code4 = random_case(rng)[0]
         ImageGrab.grabclipboard = lambda: render_image(parse(code4)).resize((700, 100))
@@ -2917,6 +3022,7 @@ def gui_read_csv_tests(app, root, rng):
         ImageGrab.grabclipboard = boom
         app.paste_image(); pump(root); assert "xclip" in shown[-1][1][1]; n += 1
         ImageGrab.grabclipboard = orig
+        g["IS_WSL"] = saved_wsl
         # 6 list -> editor, remove
         app.tree.selection_set("1"); app.list_to_editor(); pump(root); assert app.vb.raw == RF; n += 1
         app.tree.selection_set("0"); app.list_remove(); pump(root)
@@ -2992,7 +3098,7 @@ def gui_menu_tests(app, root):
             app.lang_var.set(lang); pump(root)
             hm = app.menus["help"]            # menus are rebuilt on language change
             for i, must in [(0, T[lang]["guide_text"][:20]), (1, "Ctrl+O"), (2, "49–54"), (4, "pyzbar"),
-                            (5, "vcode2bar " + __version__)]:
+                            (5, "vcode2bar " + __version__), (6, "zxing")]:
                 hm.invoke(i); pump(root)
                 w, text = app.last_help
                 assert must in text and w.winfo_exists(), (lang, i); n += 1
@@ -3563,9 +3669,29 @@ def _t_platform(seed):
         assert [k for k, _ in T[lang]["shortcut_rows"]] == [k for k, _ in T["en"]["shortcut_rows"]], lang
         assert len(T[lang]["format_rows"]) == len(T["en"]["format_rows"]), lang
         n += 1
-    # source stays compatible with Python 3.9 grammar (README minimum)
-    import ast
-    ast.parse(Path(__file__).read_text(encoding="utf-8"), feature_version=(3, 9)); n += 1
+    # source stays compatible with Python 3.9 grammar (README minimum); a packaged build has no source
+    if not getattr(sys, "frozen", False):
+        import ast
+        ast.parse(Path(__file__).read_text(encoding="utf-8"), feature_version=(3, 9)); n += 1
+    # project information comes from project.ini; nothing about owner or licence is hardcoded
+    info = project_info()
+    assert info["project"].get("name") and info["license"].get("spdx") and info["license"].get("name"), info
+    for lang in LANGUAGES:
+        lines = about_lines(T[lang])
+        assert any(info["license"]["name"] in x for x in lines) and any(info["project"]["contact"] in x for x in lines), lang
+        n += 1
+    assert "THIRD-PARTY" in notices_text(T["en"]) or "Third-party" in notices_text(T["en"]); n += 1
+    rc, out, _ = _cli(["--about", "--lang", "en"])
+    assert rc == 0 and info["license"]["name"] in out and __version__ in out; n += 1
+    rc, out, _ = _cli(["--licenses"]); assert rc == 0 and "zbar" in out.lower(); n += 1
+    # without project.ini / notices: a clear message instead of made-up details
+    saved_dirs = g["resource_dirs"]
+    try:
+        g["resource_dirs"] = lambda: []
+        assert about_lines(T["en"]) == [T["en"]["info_missing"]]; n += 1
+        assert notices_text(T["en"]).startswith(T["en"]["notices_missing"]); n += 1
+    finally:
+        g["resource_dirs"] = saved_dirs
     return n
 
 
@@ -3640,6 +3766,7 @@ CLI_EPILOG = """examples:
   vcode2bar.py --batch invoices.csv -o inv --format pdf  ...and a print-ready PDF per row
   cat invoice.txt | vcode2bar.py --decode -              find codes in text from stdin
   vcode2bar.py --deps | --selftest [RUNS] | --version
+  vcode2bar.py --about | --licenses                      licence, contact, third-party notices
 
 Console text follows --lang, else the language last chosen in the GUI, else English.
 Exit codes: 0 ok, 2 invalid input, 3 read-back check failed, 4 GUI unavailable,
@@ -3711,6 +3838,8 @@ def main(argv=None) -> int:
                    help="language of the GUI, console text and PDF page (default: last GUI choice, else en)")
     m = p.add_argument_group("other")
     m.add_argument("--deps", action="store_true", help="show which optional components are installed")
+    m.add_argument("--about", action="store_true", help="show version, licence, copyright and contact (from project.ini)")
+    m.add_argument("--licenses", action="store_true", help="show the third-party licences and notices")
     m.add_argument("--selftest", nargs="?", const=1, type=int, metavar="RUNS",
                    help="run the built-in test suite RUNS times")
     m.add_argument("--version", action="version", version=f"vcode2bar {__version__}")
@@ -3721,6 +3850,20 @@ def main(argv=None) -> int:
     if a.deps:
         for name, ok, detail in component_status():
             print(f"{'OK ' if ok else '-- '} {name}" + (f"  ({detail})" if detail else ""))
+        return 0
+    if a.about or a.licenses:
+        t = T[_cli_lang(a.lang)]
+        if a.about:
+            p = project_info()["project"]
+            print(f"{p.get('name', 'vcode2bar')} {__version__}")
+            if p.get("description"):
+                print(p["description"])
+            print()
+            print("\n".join(about_lines(t)))
+        if a.licenses:
+            if a.about:
+                print()
+            print(notices_text(t))
         return 0
     try:
         if a.ref_fi:

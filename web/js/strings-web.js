@@ -28,9 +28,8 @@ window.VC_STRINGS_WEB = {
     privacy: "Everything runs in your browser: nothing you type, open or scan is uploaded anywhere.",
     python_version: "Desktop and command-line version (Python)",
     source_code: "Source code and documentation",
-    license_line: "License: PolyForm Noncommercial 1.0.0 – free for noncommercial use",
     web_version: "Web version {v}",
-    third_party: "Includes ZXing-C++ (zxing-wasm, MIT) and PDF.js (Apache-2.0).",
+    bundled_libs: "Includes ZXing-C++ (zxing-wasm, MIT) and PDF.js (Apache-2.0).",
     import_hint: "One payment per row: iban, amount, reference, due (optional name) – or a code column.",
     web_guide_text:
       "1. Paste the 54-digit virtual barcode – or a whole invoice text or e-mail – into the input box. " +
@@ -80,9 +79,8 @@ window.VC_STRINGS_WEB = {
     privacy: "Kaikki toimii selaimessasi: mitään kirjoittamaasi, avaamaasi tai skannaamaasi ei lähetetä minnekään.",
     python_version: "Työpöytä- ja komentoriviversio (Python)",
     source_code: "Lähdekoodi ja ohjeet",
-    license_line: "Lisenssi: PolyForm Noncommercial 1.0.0 – vapaa ei-kaupalliseen käyttöön",
     web_version: "Selainversio {v}",
-    third_party: "Sisältää ZXing-C++:n (zxing-wasm, MIT) ja PDF.js:n (Apache-2.0).",
+    bundled_libs: "Sisältää ZXing-C++:n (zxing-wasm, MIT) ja PDF.js:n (Apache-2.0).",
     import_hint: "Yksi maksu riviä kohden: tili, summa, viite, eräpäivä (valinnaisesti nimi) – tai koodi-sarake.",
     web_guide_text:
       "1. Liitä 54-numeroinen virtuaaliviivakoodi – tai koko laskun teksti tai sähköposti – syöttökenttään. " +
@@ -132,9 +130,8 @@ window.VC_STRINGS_WEB = {
     privacy: "Allt körs i din webbläsare: inget du skriver, öppnar eller skannar skickas någonstans.",
     python_version: "Skrivbords- och kommandoradsversion (Python)",
     source_code: "Källkod och dokumentation",
-    license_line: "Licens: PolyForm Noncommercial 1.0.0 – fri för icke-kommersiell användning",
     web_version: "Webbversion {v}",
-    third_party: "Innehåller ZXing-C++ (zxing-wasm, MIT) och PDF.js (Apache-2.0).",
+    bundled_libs: "Innehåller ZXing-C++ (zxing-wasm, MIT) och PDF.js (Apache-2.0).",
     import_hint: "En betalning per rad: konto, belopp, referens, förfallodag (valfritt namn) – eller en kod-kolumn.",
     web_guide_text:
       "1. Klistra in den 54-siffriga virtuella streckkoden – eller hela fakturatexten eller ett e-postmeddelande – " +
@@ -184,9 +181,8 @@ window.VC_STRINGS_WEB = {
     privacy: "Alt kjører i nettleseren din: ingenting du skriver, åpner eller skanner sendes noe sted.",
     python_version: "Skrivebords- og kommandolinjeversjon (Python)",
     source_code: "Kildekode og dokumentasjon",
-    license_line: "Lisens: PolyForm Noncommercial 1.0.0 – fri for ikke-kommersiell bruk",
     web_version: "Nettversjon {v}",
-    third_party: "Inneholder ZXing-C++ (zxing-wasm, MIT) og PDF.js (Apache-2.0).",
+    bundled_libs: "Inneholder ZXing-C++ (zxing-wasm, MIT) og PDF.js (Apache-2.0).",
     import_hint: "Én betaling per rad: konto, beløp, referanse, forfallsdato (eventuelt navn) – eller en kode-kolonne.",
     web_guide_text:
       "1. Lim inn den 54-sifrede virtuelle strekkoden – eller hele fakturateksten eller en e-post – i " +

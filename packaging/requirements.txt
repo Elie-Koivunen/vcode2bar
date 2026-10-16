@@ -1,0 +1,8 @@
+# Exact versions used to build the release packages (Windows and Linux).
+# Runtime libraries:
+python-barcode==0.16.1
+pillow==12.3.0
+pyzbar==0.1.9
+pypdfium2==5.14.0
+# Build tool:
+pyinstaller==6.22.3

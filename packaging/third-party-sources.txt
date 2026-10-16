@@ -1,0 +1,13 @@
+# Pinned third-party files for the release packages: <sha256>  <file name>  <official URL>
+# The release workflow downloads, checks and attaches the LGPL sources; build.py checks the DLLs.
+
+# Corresponding source code of the LGPL libraries in the Windows packages (attached to each release)
+234efb39dbbe5cef4189cc76f37afbe3cfcfb45ae52493bfe8e191318bdbadc6  zbar-0.10.tar.bz2  https://downloads.sourceforge.net/project/zbar/zbar/0.10/zbar-0.10.tar.bz2
+72b24ded17d687193c3366d0ebe7cde1e6b18f0df8c55438ac95be39e8a30613  libiconv-1.14.tar.gz  https://ftp.gnu.org/pub/gnu/libiconv/libiconv-1.14.tar.gz
+
+# The Windows DLLs themselves, as shipped in pyzbar 0.1.9's win_amd64 wheel (checked at build time)
+43ecda0a3e803ffadeab912f5ecaa2655a8a51c6af1c4286bf9ef21cc90a4b04  libzbar-64.dll  pyzbar-0.1.9-py2.py3-none-win_amd64.whl
+2843567e3fe8c035884dcc6366628ece2f683380e6b1d64763bacf8fc617e17c  libiconv.dll  pyzbar-0.1.9-py2.py3-none-win_amd64.whl
+
+# Not shipped: offered by the Windows installer when missing (Microsoft-signed, 12.0.40664)
+a4bba7701e355ae29c403431f871a537897c363e215cafe706615e270984f17c  vcredist_x64.exe  https://download.visualstudio.microsoft.com/download/pr/10912041/cee5d6bca2ddbcd039da727bf4acb48a/vcredist_x64.exe

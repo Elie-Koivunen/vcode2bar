@@ -33,7 +33,7 @@ jobs:
         # this fails if someone changed one side without regenerating
         run: |
           python web/tools/gen_fixtures.py
-          git diff --stat --exit-code -- web/js web/tests/vectors.json
+          git diff --stat --exit-code -- web/js web/tests/vectors.json web/project.ini web/THIRD-PARTY-NOTICES.txt
       - name: Browser tests
         shell: bash
         run: |

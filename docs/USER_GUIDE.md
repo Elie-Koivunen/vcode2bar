@@ -1,8 +1,15 @@
 # vcode2bar – user guide (GUI)
 
-Start the window with `python vcode2bar.py` (Windows: `py vcode2bar.py`, or double-click
-`launch_vcode2bar.bat`; after `pip install .` also `vcode2bar-gui`). Everything runs locally: no
-invoice data is sent anywhere.
+**Installed from a release package:** start *vcode2bar* from the Start menu (Windows) or the
+application menu (Linux). With a portable package, run `vcode2bar.exe` (Windows) or `./vcode2bar`
+(Linux) in the unpacked folder. The packages are on the
+[Releases page](https://github.com/Elie-Koivunen/vcode2bar/releases/latest); see the README's
+*Download and install* section.
+
+**From source:** start the window with `python vcode2bar.py` (Windows: `py vcode2bar.py`, or
+double-click `launch_vcode2bar.bat`; after `pip install .` also `vcode2bar-gui`).
+
+Everything runs locally: no invoice data is sent anywhere.
 
 > **No Python?** The [web version](https://elie-koivunen.github.io/vcode2bar/web/) has the same three
 > tabs and works in any browser, including on phones, with camera scanning. Browser-specific notes
@@ -151,6 +158,14 @@ On macOS use `Cmd` instead of `Ctrl`. The shortcuts also work while typing in th
 *Language* menu: **English** (default), **Suomi**, **Svenska**, **Norsk (bokmål)**. The whole window,
 the help texts and the PDF page change immediately. The choice is remembered, and the command line
 uses it too unless `--lang` is given.
+
+## About, licence and third-party components
+
+- *Help → About vcode2bar* shows the version, the licence, the copyright, the website and the contact.
+  They come from `project.ini`, which sits next to the program.
+- *Help → Third-party licences* shows `THIRD-PARTY-NOTICES.txt`. It lists the components vcode2bar
+  includes, with their licences and the trademark notices. In a release package, the full licence
+  texts are in its `licenses` folder.
 
 ## Settings
 

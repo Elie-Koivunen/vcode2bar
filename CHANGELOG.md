@@ -1,9 +1,58 @@
 # Changelog – vcode2bar
 
 Versions follow [semantic versioning](https://semver.org/) and are tagged `vcode2bar-v<version>` in git.
-This repository holds the latest version. Earlier versions (1.2.0–1.3.2), their changelog and the
+This repository holds the latest version. Earlier versions (1.2.0–1.4.0), their changelog and the
 complete earlier history are kept in the
 [vibe repository's vcode2bar archive](https://github.com/Elie-Koivunen/vibe/tree/main/vcode2bar/archive).
+
+## 1.5.0 – 2026-10-16
+
+Installers and portable packages for Windows and Linux, and the licensing and notices that go with them.
+
+### Added
+- **Release packages for Windows and Linux (x86-64)** on the GitHub Releases page. Python isn't needed.
+  - **Windows installer** (`…-windows-x64-setup.exe`, Inno Setup): installs for the current user
+    without administrator rights, or for all users. It adds a Start-menu entry, an optional desktop
+    icon and, optionally, the command-line tool on PATH, and has an uninstaller.
+    - It checks for the Microsoft Visual C++ 2013 runtime that the barcode reader needs. If it's
+      missing, it offers to download Microsoft's official installer, checked against a pinned SHA-256
+      checksum, and install it. Silent installs use `/VERYSILENT /CURRENTUSER`, plus
+      `/INSTALLVCREDIST=1` for the runtime.
+  - **Windows portable** zip, with `vcode2bar.exe` (the window) and `vcode2bar-cli.exe` (the command
+    line).
+  - **Linux installer** (`…-linux-x64-setup.sh`): checks for the ZBar library and offers to install
+    it with apt, dnf, zypper or pacman, then installs per user (`~/.local`) or system-wide (as root),
+    with a menu entry and icon.
+    - Options: `--yes`, `--prefix`, `--no-prerequisites`, `--prerequisites-only`, `--uninstall`.
+  - **Linux portable** tar.gz.
+  - **Checksums and sources:** `SHA256SUMS.txt`, plus the source code of the LGPL libraries in the
+    Windows packages.
+- **`project.ini`:** the product name, owner, copyright, website, contact and licence details live in
+  one file. The About window, `--about`, the web page, the package readme and the Windows installer
+  read them from there; none of it is written into the code.
+- **Third-party notices:** `THIRD-PARTY-NOTICES.txt` lists every component the packages and the web
+  version include, with its licence and source. It also has the trademark and non-affiliation notices.
+  - Each package carries the full licence texts in a `licenses/` folder.
+  - The program shows the notices under the new *Help → Third-party licences* window and with
+    `--licenses`; the web version shows them in Help and links them from the footer.
+- **`--about`** prints the version, licence, copyright, website and contact.
+- **`packaging/`:** the build script (it smoke-tests every package and runs the full self-test inside
+  the built program), the PyInstaller spec, both installers, the pinned build tools and third-party
+  files, and the release routine (`packaging/README.md`).
+- **The `release` workflow:** builds and tests both platforms, runs the Linux installer on Debian 12,
+  Ubuntu 24.04, Fedora, openSUSE Tumbleweed and Arch Linux, checks the LGPL sources, and publishes
+  the release when a `vcode2bar-v*` tag is pushed.
+- The window uses the vcode2bar icon when it's available (packaged builds).
+
+### Changed
+- The About window and the licence texts describe only the current licence terms. The licence,
+  copyright and contact lines come from `project.ini` instead of the translated texts.
+- The web footer and Help take the licence, copyright and links from `project.ini`.
+
+### Fixed
+- **A test that depended on the computer.** On WSL, the GUI test for *Paste image* read the real
+  Windows clipboard, so its result depended on what was copied at the time. It now tests the regular
+  path with a stub; the WSL path keeps its own stubbed test.
 
 ## 1.4.0 – 2026-10-11
 

@@ -94,6 +94,10 @@ The tabs, buttons and texts are the same as in the Python GUI – see the [user 
 - Third-party code (served from this site): ZXing-C++ via [zxing-wasm](https://github.com/Sec-ant/zxing-wasm)
   (MIT) for reading barcodes and [PDF.js](https://github.com/mozilla/pdf.js) (Apache-2.0) for PDFs –
   see [`web/vendor/README.md`](../web/vendor/README.md) for versions and checksums.
+- **Licence and notices:** the footer and *Help → About* take the licence, copyright, website and
+  contact from `web/project.ini`, a copy of the repository's `project.ini`. *Help → Third-party
+  licences* and the footer link show `THIRD-PARTY-NOTICES.txt`. `gen_fixtures.py` copies both files
+  into `web/`, and CI fails if the copies are out of date.
 
 ## Browser support
 
@@ -121,6 +125,7 @@ web/
 ├── index.html            the page (tabs, dialogs) + Content Security Policy
 ├── app.css               light/dark theme, phone layout
 ├── icon.svg
+├── project.ini, THIRD-PARTY-NOTICES.txt   GENERATED copies of the repository files (licence, contact, notices)
 ├── js/
 │   ├── core.js           parse/validate/build, Code 128 set C, text extraction, CSV export,
 │   │                     batch-CSV import (port of the Python core, no DOM)

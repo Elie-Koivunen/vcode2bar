@@ -66,7 +66,25 @@ of invoices. No data leaves your machine. There are two editions:
 |---|---|
 | ![Web version](docs/screenshots/web_main.png) | ![Web version, narrow](docs/screenshots/web_mobile.png) |
 
-## Install
+## Download and install
+
+Ready-made packages for **Windows** and **Linux** (x86-64) are on the
+[**Releases page**](https://github.com/Elie-Koivunen/vcode2bar/releases/latest). Nothing else is needed,
+not even Python. Choose an **installer** or a **portable** package:
+
+| File | What it is |
+|---|---|
+| `vcode2bar-<version>-windows-x64-setup.exe` | **Windows installer.** Installs for your user account without administrator rights (or for all users), adds a Start-menu entry, an optional desktop icon and, optionally, the command-line tool to PATH. It checks for the Microsoft Visual C++ 2013 runtime that the barcode reader needs, and offers to download and install it from microsoft.com. Uninstall from *Settings → Apps*. |
+| `vcode2bar-<version>-windows-x64-portable.zip` | **Windows, portable.** Unzip anywhere and run `vcode2bar.exe` (window) or `vcode2bar-cli.exe` (command line). Nothing is installed. |
+| `vcode2bar-<version>-linux-x64-setup.sh` | **Linux installer.** Run `sh vcode2bar-<version>-linux-x64-setup.sh`. It checks for the ZBar library and offers to install it with your distribution's package manager (apt, dnf, zypper or pacman), then installs vcode2bar for your user (`~/.local`; `/usr/local` as root) with a menu entry. `--help` lists the options (`--yes`, `--prefix`, `--uninstall`, …). |
+| `vcode2bar-<version>-linux-x64-portable.tar.gz` | **Linux, portable.** Unpack and run `./vcode2bar`. For reading barcodes from images and PDFs, install ZBar yourself (see `README.txt` inside). |
+| `SHA256SUMS.txt` | Checksums of all files: `sha256sum -c SHA256SUMS.txt`. |
+| `zbar-0.10.tar.bz2`, `libiconv-1.14.tar.gz` | Source code of the LGPL libraries in the Windows packages (see [third-party notices](THIRD-PARTY-NOTICES.txt)). |
+
+The packages are tested on Windows and on Debian 12, Ubuntu 22.04 and 24.04, Fedora, openSUSE
+Tumbleweed and Arch Linux before each release.
+
+### Run from source
 
 Get the code with `git clone https://github.com/Elie-Koivunen/vcode2bar.git`, or *Code → Download ZIP*
 on GitHub. vcode2bar is a single file, so `vcode2bar.py` on its own is enough to run it.
@@ -194,13 +212,16 @@ erratum left over from the 2019 example change. The spec's own algorithm gives 3
 vcode2bar/
 ├── .github/workflows/
 │   ├── selftest.yml        CI: Python self-test on Windows + Linux, package install check
-│   └── web.yml             CI: web tests in headless Chrome, then publish to GitHub Pages
+│   ├── web.yml             CI: web tests in headless Chrome, then publish to GitHub Pages
+│   └── release.yml         CI: Windows/Linux installers + portable packages, tested, published on a tag
 ├── vcode2bar.py            the Python application: core, GUI, CLI, self-test
+├── project.ini             product name, owner, contact and licence details (edit here, not in code)
 ├── web/                    the web version (static files; see docs/WEB.md)
+├── packaging/              installers and portable packages (see packaging/README.md)
 ├── launch_vcode2bar.bat    Windows double-click launcher
 ├── requirements.txt        pip dependencies (required + optional)
 ├── pyproject.toml          optional packaging: pip install . -> vcode2bar / vcode2bar-gui
-├── README.md  CHANGELOG.md  LICENSE
+├── README.md  CHANGELOG.md  LICENSE  THIRD-PARTY-NOTICES.txt
 ├── docs/
 │   ├── USER_GUIDE.md  CLI.md  WEB.md  DEVELOPMENT.md
 │   ├── examples/batch_invoices.csv
@@ -209,7 +230,8 @@ vcode2bar/
 
 ## Versions
 
-The current version is **1.4.0** (tag `vcode2bar-v1.4.0`), shared by the Python and web editions.
+The current version is **1.5.0** (tag `vcode2bar-v1.5.0`), shared by the Python and web editions
+and the packages.
 This repository holds the latest version only. Earlier versions are kept unchanged in the
 [vibe repository's vcode2bar archive](https://github.com/Elie-Koivunen/vibe/tree/main/vcode2bar/archive):
 releases 1.2.0–1.3.2, their tags, and the complete earlier history.
@@ -218,9 +240,10 @@ releases 1.2.0–1.3.2, their tags, and the complete earlier history.
 
 [![License: PolyForm Noncommercial 1.0.0](https://img.shields.io/badge/license-PolyForm%20Noncommercial%201.0.0-blue)](LICENSE)
 
-From version 1.4.0, vcode2bar is licensed under the
+vcode2bar is licensed under the
 **[PolyForm Noncommercial License 1.0.0](https://polyformproject.org/licenses/noncommercial/1.0.0)**
-(full text in [LICENSE](LICENSE)).
+(full text in [LICENSE](LICENSE)). The licence, copyright and contact details are kept in
+[`project.ini`](project.ini); the program shows them under *Help → About* and with `--about`.
 
 > Required Notice: Copyright (c) 2026 Elie Koivunen (https://github.com/Elie-Koivunen/vcode2bar)
 
@@ -234,11 +257,11 @@ In short (the license text is what counts):
   `Required Notice` line above.
 - **Not allowed without separate permission:** commercial use, for example using it in a business
   to produce invoices, or building it into a product or service you sell. For a commercial license,
-  contact the author through [GitHub](https://github.com/Elie-Koivunen).
+  use the contact in [`project.ini`](project.ini).
 
-**Bundled libraries:** the web version includes zxing-wasm (MIT) and PDF.js (Apache-2.0) unmodified.
-They keep their own licenses (see [`web/vendor/`](web/vendor/README.md)).
-
-**Earlier versions:** 1.2.0 – 1.3.2 were released under the MIT license. Copies of those versions,
-including the [archived releases](https://github.com/Elie-Koivunen/vibe/tree/main/vcode2bar/archive),
-keep the MIT terms they came with. The license change applies from 1.4.0 onwards.
+**Third-party components and trademarks:** the packages and the web version include third-party
+libraries under their own licences (Python, Tcl/Tk, Pillow, python-barcode, pyzbar, ZBar and libiconv
+(LGPL-2.1, Windows only), pypdfium2/PDFium, PyInstaller, Inno Setup, zxing-wasm, PDF.js).
+[THIRD-PARTY-NOTICES.txt](THIRD-PARTY-NOTICES.txt) lists them with their licences, the source of the
+LGPL libraries, and the trademark and non-affiliation notices; the program shows it under
+*Help → Third-party licences* and with `--licenses`.

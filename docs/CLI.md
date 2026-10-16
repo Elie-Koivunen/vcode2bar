@@ -8,7 +8,9 @@ python vcode2bar.py [CODE ...] [mode] [create options] [output options]
 ```
 
 On Windows use `py vcode2bar.py …`. After `pip install .`, the command is just `vcode2bar …`.
-With **no arguments** (or `--gui`) the GUI opens.
+With the release packages it's `vcode2bar-cli.exe …` on Windows (installed with *Add to PATH*, or in
+the portable folder), and `vcode2bar …` on Linux after `setup.sh` (`./vcode2bar …` in the portable
+folder). With **no arguments** (or `--gui`) the GUI opens.
 
 - [Modes](#modes)
 - [Options](#options)
@@ -37,6 +39,8 @@ into one list, and the output options apply to all of them.
 | `--ref-rf REF` | Print the RF creditor reference (ISO 11649) for a Finnish reference. |
 | `--gui` | Open the GUI, optionally pre-filled with the first `CODE`. |
 | `--deps` | Show which optional components are installed, with install hints. |
+| `--about` | Version, licence, copyright, website and contact (read from `project.ini`). |
+| `--licenses` | The third-party notices: bundled components, their licences, trademark notices. |
 | `--selftest [RUNS]` | Run the built-in test suite (see [DEVELOPMENT.md](DEVELOPMENT.md#tests)). |
 | `--version`, `--help` | |
 

@@ -37,6 +37,7 @@
     formCode: null,
     csvFmt: store.get("csv_fmt", "excel") === "std" ? "std" : "excel",
     verifyToken: 0,
+    project: null,            // project.ini: {project: {...}, license: {...}}
   };
 
   const t = (k) => (S[state.lang] && S[state.lang][k] !== undefined ? S[state.lang][k] : S.en[k]);
@@ -92,6 +93,7 @@
     refreshList();
     update();
     formChanged();
+    applyProject();
     if ($("dlg-help").open) fillHelp();
   }
 
@@ -501,16 +503,63 @@
     const about = $("help-about");
     about.textContent = "";
     for (const line of [fmt("web_version", { v: VERSION }), ...String(t("about_text")).split("\n").filter(Boolean),
-                        t("privacy"), t("third_party")]) {
+                        ...aboutLines(), t("privacy"), t("bundled_libs")]) {
       const p = document.createElement("p"); p.textContent = line; about.appendChild(p);
     }
-    const p = document.createElement("p");
-    const a = document.createElement("a");
-    a.href = "https://github.com/Elie-Koivunen/vcode2bar"; a.rel = "noopener"; a.textContent = "github.com/Elie-Koivunen/vcode2bar";
-    p.append(t("source_code") + ": ", a);
-    about.appendChild(p);
+    const notices = $("help-notices");
+    if (!notices.textContent) {
+      fetch("THIRD-PARTY-NOTICES.txt").then((r) => (r.ok ? r.text() : Promise.reject(r.status)))
+        .then((txt) => { notices.textContent = txt; })
+        .catch(() => { notices.textContent = t("notices_missing"); });
+    }
   }
   function openHelp() { fillHelp(); if (!$("dlg-help").open) $("dlg-help").showModal(); }
+
+  // ------------------------------------------------------------------ project information (project.ini)
+  // Name, owner, contact and licence come from project.ini, not from this code.
+  function parseIni(text) {
+    const out = {};
+    let section = null;
+    for (const raw of String(text).split(/\r?\n/)) {
+      const line = raw.trim();
+      if (!line || line.startsWith(";") || line.startsWith("#")) continue;
+      const sec = /^\[(.+)\]$/.exec(line);
+      if (sec) { section = sec[1].trim(); out[section] = out[section] || {}; continue; }
+      const kv = /^([^=:]+)[=:](.*)$/.exec(line);
+      if (kv && section) out[section][kv[1].trim().toLowerCase()] = kv[2].trim();
+    }
+    return { project: out.project || {}, license: out.license || {} };
+  }
+  async function loadProject() {
+    try {
+      const r = await fetch("project.ini", { cache: "no-store" });
+      state.project = r.ok ? parseIni(await r.text()) : null;
+    } catch (e) {
+      state.project = null;
+    }
+    applyProject();
+  }
+  /** Licence, copyright, website and contact lines (as the Python version's About shows them). */
+  function aboutLines() {
+    const info = state.project;
+    if (!info || (!Object.keys(info.project).length && !Object.keys(info.license).length)) return [t("info_missing")];
+    const p = info.project, lic = info.license, lines = [];
+    if (lic.name) lines.push(`${t("lbl_license")}: ${lic.name}` + (lic.summary ? ` – ${lic.summary}` : ""));
+    if (p.copyright) lines.push(p.copyright);
+    if (p.website) lines.push(`${t("lbl_website")}: ${p.website}`);
+    if (p.contact) lines.push(`${t("lbl_contact")}: ${p.contact}`);
+    return lines;
+  }
+  function applyProject() {
+    const info = state.project;
+    const p = (info && info.project) || {}, lic = (info && info.license) || {};
+    $("foot-license").textContent = lic.name ? `${t("lbl_license")}: ${lic.name}` : t("info_missing");
+    $("foot-copyright").textContent = p.copyright || "";
+    if (p.website) {
+      $("link-source").href = p.website;
+      $("link-python").href = p.website.replace(/\/$/, "") + "#install";
+    }
+  }
 
   // ------------------------------------------------------------------ wiring
   function init() {
@@ -623,7 +672,9 @@
     fromHash();
     showTab("main");
     $("input").focus();
-    window.vcode2barApp = { state, setInput, update, readFiles, importCsv, addRecord, showTab, formChanged, exportCsv, pdfBytes };
+    const projectLoaded = loadProject();
+    window.vcode2barApp = { state, setInput, update, readFiles, importCsv, addRecord, showTab, formChanged, exportCsv, pdfBytes,
+                            projectLoaded, aboutLines, openHelp };
   }
 
   init();

@@ -177,6 +177,15 @@ in the same layout as the earlier archives there.
 4. Run `python vcode2bar.py --selftest 3`, regenerate the web data (`python web/tools/gen_fixtures.py`:
    the version number comes from `__version__`), and run the web tests 3 times
    (`python web/tools/run_browser_tests.py`). CI then runs both on GitHub and publishes the web version.
-5. Commit, then tag: `git tag -a vcode2bar-v<NEW> -m "vcode2bar <NEW>"`.
+5. Commit, push, and check that CI is green. Then tag and push the tag:
+   `git tag -a vcode2bar-v<NEW> -m "vcode2bar <NEW>"`. The tag starts the **release** workflow, which
+   builds, tests and publishes the Windows and Linux packages (see
+   [packaging/README.md](../packaging/README.md)).
 6. Use `git mv` for renames, never a delete. A file that leaves the project is kept in the vibe
    archive first.
+
+**Project details and licensing:** the product name, owner, contact and licence details live only in
+[`project.ini`](../project.ini). The program (`project_info()`, `about_lines()`), the web page, the
+package readme and the Windows installer all read them from there. Every bundled third-party component
+must be listed in [`THIRD-PARTY-NOTICES.txt`](../THIRD-PARTY-NOTICES.txt). The rules for the packages
+are in [packaging/README.md → Licensing rules](../packaging/README.md#licensing-rules-for-the-packages).

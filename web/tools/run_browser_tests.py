@@ -63,7 +63,12 @@ def main() -> int:
     ap.add_argument("--timeout", type=int, default=600, help="seconds to wait for the report")
     a = ap.parse_args()
 
-    srv = http.server.ThreadingHTTPServer((a.host, a.port), partial(Handler, directory=str(WEB)))
+    class Server(http.server.ThreadingHTTPServer):
+        def handle_error(self, request, client_address):       # a browser cancelling a download
+            if not isinstance(sys.exc_info()[1], (BrokenPipeError, ConnectionResetError)):
+                super().handle_error(request, client_address)
+
+    srv = Server((a.host, a.port), partial(Handler, directory=str(WEB)))
     port = srv.server_address[1]
     threading.Thread(target=srv.serve_forever, daemon=True).start()
     url = f"http://127.0.0.1:{port}/tests/?report=1"

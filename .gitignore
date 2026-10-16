@@ -14,3 +14,5 @@ viivakoodi*.pdf
 !docs/examples/*.csv
 .DS_Store
 Thumbs.db
+# package builds
+packaging/out/

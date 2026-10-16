@@ -338,6 +338,17 @@
     const ev2 = new W.Event("beforeunload", { cancelable: true });
     W.dispatchEvent(ev2);
     check("an empty list leaves quietly", !ev2.defaultPrevented);
+    step("11 licence and contact come from project.ini; Help shows the third-party notices");
+    await A.projectLoaded;
+    const ini = await (await fetch("../project.ini")).text();
+    const licName = /^name\s*=\s*(.+)$/m.exec(ini.split("[license]")[1])[1].trim();
+    const contact = /^contact\s*=\s*(.+)$/m.exec(ini)[1].trim();
+    check("footer shows the licence from project.ini", $("foot-license").textContent.includes(licName), $("foot-license").textContent);
+    check("About lines from project.ini", A.aboutLines().some((x) => x.includes(contact)) && A.aboutLines().some((x) => x.includes(licName)));
+    check("footer links from project.ini", $("link-source").href.startsWith("https://github.com/"));
+    A.openHelp();
+    check("Help lists the third-party notices", await until(() => $("help-notices").textContent.includes("zxing-wasm"), 5000));
+    $("dlg-help").close();
     step("10 a code in the page address opens directly"); // 10 a code in the page address opens directly
     A.setInput("");
     W.location.hash = c0;                            // same page, new #code: no reload, hashchange
