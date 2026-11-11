@@ -1,3 +1,5 @@
+# Copyright (c) 2026 Elie Koivunen
+# SPDX-License-Identifier: LGPL-3.0-only
 """Entry point of the packaged GUI program (vcode2bar.exe on Windows, started from the Start menu).
 
 A windowed Windows program has no console, so sys.stdout/sys.stderr are None there; messages go to

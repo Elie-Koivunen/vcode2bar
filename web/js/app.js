@@ -2,8 +2,8 @@
  * vcode2bar web - the page: Barcode / Create / List tabs, files, camera, clipboard, help, languages.
  * Behaviour follows the Python GUI (vcode2bar.py, class App) wherever a browser allows it.
  *
- * License: PolyForm Noncommercial 1.0.0 - see LICENSE.
- * Required Notice: Copyright (c) 2026 Elie Koivunen (https://github.com/Elie-Koivunen/vcode2bar)
+ * Copyright (c) 2026 Elie Koivunen
+ * SPDX-License-Identifier: LGPL-3.0-only
  */
 (function () {
   "use strict";

@@ -1,4 +1,6 @@
 #!/usr/bin/env python3
+# Copyright (c) 2026 Elie Koivunen
+# SPDX-License-Identifier: LGPL-3.0-only
 """
 vcode2bar - Finnish virtual barcode (virtuaaliviivakoodi) <-> bank barcode.
 
@@ -24,7 +26,7 @@ Requires: pip install python-barcode pillow
 Optional: pyzbar (+ zbar library) for reading images / read-back check, pypdfium2 for PDFs.
 GUI uses tkinter (bundled on Windows/macOS; Debian/Ubuntu: apt install python3-tk).
 Project, contact and licence details: project.ini (shown by Help > About and --about).
-Licence terms: LICENSE. Third-party components: THIRD-PARTY-NOTICES.txt (--licenses).
+Licence: LGPL-3.0-only (LICENSE, with the GPL 3.0 text in LICENSE.GPL). Third-party components: THIRD-PARTY-NOTICES.txt (--licenses).
 """
 from __future__ import annotations
 

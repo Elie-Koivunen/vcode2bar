@@ -6,8 +6,8 @@
  * page (web/tests/) checks it against vectors produced by the Python code itself.
  * Amounts are integer cents throughout, never floating point.
  *
- * License: PolyForm Noncommercial 1.0.0 - see LICENSE.
- * Required Notice: Copyright (c) 2026 Elie Koivunen (https://github.com/Elie-Koivunen/vcode2bar)
+ * Copyright (c) 2026 Elie Koivunen
+ * SPDX-License-Identifier: LGPL-3.0-only
  */
 (function (root) {
   "use strict";

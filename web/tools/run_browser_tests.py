@@ -1,4 +1,6 @@
 #!/usr/bin/env python3
+# Copyright (c) 2026 Elie Koivunen
+# SPDX-License-Identifier: LGPL-3.0-only
 """Run the web version's test page in a headless browser and report the result.
 
     python web/tools/run_browser_tests.py --browser google-chrome            (CI, Linux)

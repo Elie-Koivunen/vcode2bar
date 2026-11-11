@@ -1,4 +1,6 @@
 #!/usr/bin/env python3
+# Copyright (c) 2026 Elie Koivunen
+# SPDX-License-Identifier: LGPL-3.0-only
 """Generate the web version's shared data from the Python version, so both stay in step.
 
     python web/tools/gen_fixtures.py          (run from the repository root, needs python-barcode)

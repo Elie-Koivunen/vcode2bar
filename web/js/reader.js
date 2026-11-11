@@ -7,8 +7,8 @@
  * Like the Python version, every barcode found is validated as a virtual barcode; other barcodes
  * are reported as "ignored", and harder variants (bigger, tilted) are tried until a code turns up.
  *
- * License: PolyForm Noncommercial 1.0.0 - see LICENSE.
- * Required Notice: Copyright (c) 2026 Elie Koivunen (https://github.com/Elie-Koivunen/vcode2bar)
+ * Copyright (c) 2026 Elie Koivunen
+ * SPDX-License-Identifier: LGPL-3.0-only
  */
 (function (root) {
   "use strict";

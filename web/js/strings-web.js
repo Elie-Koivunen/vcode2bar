@@ -1,6 +1,7 @@
 // UI strings that only the web version needs. Everything shared with the Python version comes from
 // strings-core.js (generated from vcode2bar.py). Every language must have every key (tested).
-// License: PolyForm Noncommercial 1.0.0 - see LICENSE.
+// Copyright (c) 2026 Elie Koivunen
+// SPDX-License-Identifier: LGPL-3.0-only
 window.VC_STRINGS_WEB = {
   en: {
     tagline: "Finnish virtual barcode ↔ bank barcode – runs entirely in your browser",

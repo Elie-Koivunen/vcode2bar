@@ -1,4 +1,6 @@
 #!/usr/bin/env python3
+# Copyright (c) 2026 Elie Koivunen
+# SPDX-License-Identifier: LGPL-3.0-only
 """Build the vcode2bar release packages for the current platform.
 
     python packaging/build.py [--out DIR] [--selftest] [--no-installer]
@@ -122,7 +124,7 @@ def package_readme(v: str, cp: configparser.ConfigParser) -> str:
              if WINDOWS else "Start ./vcode2bar (without arguments it opens the window; './vcode2bar --help' for the command line).")
     return (f"{p.get('name')} {v} - {p.get('description')}\n\n"
             f"{start}\n\n{prereq}\n"
-            f"Licence: {lic.get('name')} - {lic.get('summary')} (see LICENSE)\n"
+            f"Licence: {lic.get('name')} - {lic.get('summary')} (see LICENSE and LICENSE.GPL)\n"
             f"Third-party components and their licences: THIRD-PARTY-NOTICES.txt and the licenses folder.\n"
             f"{p.get('copyright')}\nWebsite: {p.get('website')}\nContact: {p.get('contact')}\n")
 
@@ -247,7 +249,7 @@ def main() -> int:
     run([sys.executable, "-m", "PyInstaller", "--noconfirm", "--clean", "--distpath", out / "dist",
          "--workpath", work, PKG / "vcode2bar.spec"])
     app = out / "dist" / "vcode2bar"
-    for f in ("LICENSE", "THIRD-PARTY-NOTICES.txt", "project.ini"):
+    for f in ("LICENSE", "LICENSE.GPL", "THIRD-PARTY-NOTICES.txt", "project.ini"):
         shutil.copy2(ROOT / f, app / f)
     shutil.copy2(PKG / "assets" / "vcode2bar.png", app / "vcode2bar.png")
     (app / "README.txt").write_text(package_readme(v, project()), encoding="utf-8")

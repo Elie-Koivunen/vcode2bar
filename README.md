@@ -15,8 +15,8 @@ of invoices. No data leaves your machine. There are two editions:
 
 ![Main window](docs/screenshots/main_en.png)
 
-> **New in 1.4.0:** the [web version](https://elie-koivunen.github.io/vcode2bar/web/), and a new
-> license, [PolyForm Noncommercial 1.0.0](#license). See the [changelog](CHANGELOG.md).
+> **Licence:** from the next release, vcode2bar is free software under the
+> [LGPL 3.0 only](#license). See the [changelog](CHANGELOG.md).
 
 ## Documentation
 
@@ -221,7 +221,7 @@ vcode2bar/
 ├── launch_vcode2bar.bat    Windows double-click launcher
 ├── requirements.txt        pip dependencies (required + optional)
 ├── pyproject.toml          optional packaging: pip install . -> vcode2bar / vcode2bar-gui
-├── README.md  CHANGELOG.md  LICENSE  THIRD-PARTY-NOTICES.txt
+├── README.md  CHANGELOG.md  LICENSE (LGPL 3.0)  LICENSE.GPL (GPL 3.0)  THIRD-PARTY-NOTICES.txt
 ├── docs/
 │   ├── USER_GUIDE.md  CLI.md  WEB.md  DEVELOPMENT.md
 │   ├── examples/batch_invoices.csv
@@ -238,26 +238,25 @@ releases 1.2.0–1.3.2, their tags, and the complete earlier history.
 
 ## License
 
-[![License: PolyForm Noncommercial 1.0.0](https://img.shields.io/badge/license-PolyForm%20Noncommercial%201.0.0-blue)](LICENSE)
+[![License: LGPL-3.0-only](https://img.shields.io/badge/license-LGPL--3.0--only-blue)](LICENSE)
 
-vcode2bar is licensed under the
-**[PolyForm Noncommercial License 1.0.0](https://polyformproject.org/licenses/noncommercial/1.0.0)**
-(full text in [LICENSE](LICENSE)). The licence, copyright and contact details are kept in
-[`project.ini`](project.ini); the program shows them under *Help → About* and with `--about`.
+Copyright (c) 2026 Elie Koivunen.
 
-> Required Notice: Copyright (c) 2026 Elie Koivunen (https://github.com/Elie-Koivunen/vcode2bar)
+vcode2bar is free software, licensed under the
+**[GNU Lesser General Public License, version 3.0 only](https://www.gnu.org/licenses/lgpl-3.0.html)**
+(SPDX `LGPL-3.0-only`). The LGPL text is in [LICENSE](LICENSE). It builds on the GNU General Public
+License version 3, whose text is in [LICENSE.GPL](LICENSE.GPL). Both files come with every package and
+with the web version. The source code is this repository. The licence, copyright and contact details
+are kept in [`project.ini`](project.ini); the program shows them under *Help → About* and with
+`--about`. Every source file carries an `SPDX-License-Identifier: LGPL-3.0-only` line, and files
+without one are covered by this statement.
 
-In short (the license text is what counts):
+In short (the licence text is what counts): you may use, copy, change and share vcode2bar, also
+commercially. If you share a copy, changed or not, include the licence texts and make the source of
+vcode2bar, with your changes, available under the same licence.
 
-- **Allowed:** using, copying, changing and sharing vcode2bar for any **noncommercial purpose**. That
-  includes personal use, such as paying your own bills, private study, hobby projects and
-  experiments, and use by **noncommercial organisations**: charities, schools, public research and
-  government bodies.
-- **Conditions:** anyone you give a copy to also gets the license terms (or their URL) and the
-  `Required Notice` line above.
-- **Not allowed without separate permission:** commercial use, for example using it in a business
-  to produce invoices, or building it into a product or service you sell. For a commercial license,
-  use the contact in [`project.ini`](project.ini).
+Releases up to and including 1.5.0 were published under the PolyForm Noncommercial License 1.0.0,
+and copies of them keep those terms.
 
 **Third-party components and trademarks:** the packages and the web version include third-party
 libraries under their own licences (Python, Tcl/Tk, Pillow, python-barcode, pyzbar, ZBar and libiconv

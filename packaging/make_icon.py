@@ -1,4 +1,6 @@
 #!/usr/bin/env python3
+# Copyright (c) 2026 Elie Koivunen
+# SPDX-License-Identifier: LGPL-3.0-only
 """Draw the vcode2bar icon (the same design as web/icon.svg) and write
 packaging/assets/vcode2bar.png (256 px) and vcode2bar.ico (16-256 px).
 

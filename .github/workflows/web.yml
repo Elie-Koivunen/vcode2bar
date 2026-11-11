@@ -71,6 +71,7 @@ jobs:
           mkdir -p _site/web
           rsync -a --exclude tools/ web/ _site/web/
           cp LICENSE _site/web/LICENSE.txt
+          cp LICENSE.GPL _site/web/LICENSE.GPL.txt
           cat > _site/index.html <<'EOF'
           <!doctype html>
           <html lang="en"><head><meta charset="utf-8">

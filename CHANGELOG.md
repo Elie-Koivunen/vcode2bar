@@ -5,6 +5,16 @@ This repository holds the latest version. Earlier versions (1.2.0–1.4.0), thei
 complete earlier history are kept in the
 [vibe repository's vcode2bar archive](https://github.com/Elie-Koivunen/vibe/tree/main/vcode2bar/archive).
 
+## Unreleased
+
+### Changed
+- **Licence: LGPL-3.0-only** (was PolyForm Noncommercial 1.0.0), from the next release after 1.5.0.
+  - [LICENSE](LICENSE) holds the GNU LGPL 3.0 text, and [LICENSE.GPL](LICENSE.GPL) the GNU GPL 3.0
+    text it builds on. Both go into every package and onto the web version.
+  - `pyproject.toml` and `project.ini` use the SPDX id `LGPL-3.0-only`.
+  - Source files carry an `SPDX-License-Identifier` line.
+  - Releases up to and including 1.5.0 keep the terms they were published with.
+
 ## 1.5.0 – 2026-10-16
 
 Installers and portable packages for Windows and Linux, and the licensing and notices that go with them.

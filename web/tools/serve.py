@@ -1,4 +1,6 @@
 #!/usr/bin/env python3
+# Copyright (c) 2026 Elie Koivunen
+# SPDX-License-Identifier: LGPL-3.0-only
 """Serve the web version locally for development:  python web/tools/serve.py [--port 8765]
 
 Then open http://127.0.0.1:8765/ (the app) or http://127.0.0.1:8765/tests/ (the test page).

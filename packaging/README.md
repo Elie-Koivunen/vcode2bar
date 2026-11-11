@@ -29,7 +29,7 @@ packaging/
 └── make_icon.py
 ```
 
-What goes into every package, next to the program: `LICENSE`, `THIRD-PARTY-NOTICES.txt`,
+What goes into every package, next to the program: `LICENSE` (LGPL 3.0), `LICENSE.GPL` (GPL 3.0), `THIRD-PARTY-NOTICES.txt`,
 `project.ini`, `README.txt` (written from `project.ini`), the icon, and a `licenses/` folder with the
 full licence text of every bundled component (collected from the installed packages at build time).
 

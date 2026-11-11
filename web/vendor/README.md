@@ -1,8 +1,8 @@
 # Bundled third-party libraries
 
 The web version serves these files itself, so it needs no CDN and sends nothing to third parties.
-They keep their own licenses, which are included in each folder. vcode2bar's own PolyForm
-Noncommercial license doesn't apply to them.
+They keep their own licenses, which are included in each folder. vcode2bar's own licence
+(LGPL-3.0-only) doesn't apply to them.
 
 | Folder | Library | Version | License | Files (unmodified from the npm package) | Used for |
 |---|---|---|---|---|---|
