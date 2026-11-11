@@ -80,6 +80,7 @@ you from their own distributions (pip, your package manager) under the same lice
 zxing-wasm 3.1.5 (barcode reading in the browser; ZXing-C++ compiled to WebAssembly)
     Licence: MIT (zxing-wasm); ZXing-C++ under Apache-2.0.
     https://github.com/Sec-ant/zxing-wasm                    web/vendor/zxing-wasm/LICENSE
+    https://github.com/zxing-cpp/zxing-cpp                   web/vendor/zxing-wasm/LICENSE.zxing-cpp
 
 PDF.js 6.4.299 (reading invoice PDFs in the browser)
     Licence: Apache-2.0.
